@@ -33,7 +33,7 @@ export const products: Product[] = [
     featured: true,
     hasCamera: false,
     faceId: false,
-    images: ["/product-lock.svg"]
+    images: ["/products/domy-x5-main.png", "/products/domy-x5-detail.png"]
   },
   {
     id: "domy-m1-pro",
@@ -50,7 +50,7 @@ export const products: Product[] = [
     featured: true,
     hasCamera: true,
     faceId: false,
-    images: ["/product-lock.svg"]
+    images: ["/products/domy-m1-pro-main.png", "/products/domy-m1-pro-screen.png", "/products/domy-m1-pro-keypad.png"]
   },
   {
     id: "domy-m24",
@@ -67,7 +67,7 @@ export const products: Product[] = [
     featured: true,
     hasCamera: true,
     faceId: true,
-    images: ["/product-lock.svg"]
+    images: ["/products/domy-m24-main.png", "/products/domy-m24-camera.png", "/products/domy-m24-access.png"]
   }
 ];
 
