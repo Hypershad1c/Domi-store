@@ -1,0 +1,18 @@
+{
+  "routes": [
+    {"path":"/","title":"domiStore — Serrures intelligentes"},
+    {"path":"/boutique","title":"Boutique domiStore"},
+    {"path":"/produit/:slug","title":"Produit domiStore"},
+    {"path":"/comparatif","title":"Comparatif des serrures"},
+    {"path":"/panier","title":"Panier et commande"},
+    {"path":"/espace-pro","title":"Espace Pro"},
+    {"path":"/contact","title":"Contact domiStore"},
+    {"path":"/mentions-legales","title":"Mentions légales"},
+    {"path":"/conditions-de-vente","title":"Conditions de vente"},
+    {"path":"/politique-de-livraison","title":"Politique de livraison"},
+    {"path":"/admin","title":"Administration domiStore"},
+    {"path":"/admin/produits","title":"Produits — Administration"},
+    {"path":"/admin/commandes","title":"Commandes — Administration"},
+    {"path":"/admin/devis","title":"Devis — Administration"}
+  ]
+}
