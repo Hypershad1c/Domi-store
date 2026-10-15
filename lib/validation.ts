@@ -31,5 +31,8 @@ export const productSchema = z.object({
   published: z.boolean(),
   featured: z.boolean(),
   hasCamera: z.boolean(),
-  faceId: z.boolean()
+  faceId: z.boolean(),
+  imageUrl: z.string().url().optional()
 });
+
+export const orderStatusSchema = z.enum(["NEW", "CONFIRMED", "SHIPPED", "DELIVERED", "CANCELLED"]);
