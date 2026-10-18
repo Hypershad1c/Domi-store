@@ -4,7 +4,7 @@ Boutique Next.js 15 App Router pour les serrures intelligentes Domi'Lock. Le pro
 
 ## Stack
 
-Next.js 15 App Router, TypeScript, Tailwind CSS, Prisma, PostgreSQL cloud, bcrypt, Zod et Vercel Blob pour les visuels admin. Les visuels des trois modèles fournis dans `Catalogue_Domi-Lock.pdf` sont extraits dans `public/products/` et servent désormais au catalogue initial.
+Next.js 15 App Router, TypeScript, Tailwind CSS, Prisma, PostgreSQL cloud, bcrypt, Zod, ExcelJS et Vercel Blob pour les visuels admin. Les visuels des trois modèles fournis dans `Catalogue_Domi-Lock.pdf` sont extraits dans `public/products/` et servent au catalogue initial.
 
 ## Lancer localement
 
@@ -23,9 +23,15 @@ Renseigner `POSTGRES_URL`, `AUTH_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD_HASH` e
 node -e "console.log(require('bcryptjs').hashSync('CHANGEZ-MOI', 12))"
 ```
 
+## Commandes et confirmation admin
+
+Le client ajoute les produits au panier puis remplit le formulaire intégré avec nom, téléphone, ville, adresse et remarque. La commande est enregistrée dans PostgreSQL avec le statut `NEW` et aucun bouton de commande WhatsApp n'est utilisé. Après réception, l'administrateur ouvre `/admin/commandes` et passe la commande à `Confirmée`, puis éventuellement `Expédiée`, `Livrée` ou `Annulée`.
+
+Le bouton **Télécharger Excel** génère `domistore-commandes.xlsx` à partir de PostgreSQL à chaque clic : le fichier contient l'identifiant, la date, le client, les coordonnées, les produits, le total, le statut et la remarque. Comme PostgreSQL est la source durable, chaque nouvelle commande et chaque changement de statut apparaît dans l'export Excel suivant, sans dépendre d'un disque local Vercel éphémère. Si `BLOB_READ_WRITE_TOKEN` est configuré, le même fichier est aussi synchronisé automatiquement dans Vercel Blob privé après chaque création ou changement de statut.
+
 ## Administration
 
-Ouvrir `/admin/login` avec `ADMIN_EMAIL` et le mot de passe correspondant à `ADMIN_PASSWORD_HASH`. Le dashboard donne accès aux produits, catégories, commandes et demandes de devis. Les produits sont éditables avec statut publié/brouillon, mise en avant, stock, caractéristiques et image principale. Le bouton d'upload envoie les fichiers vers Vercel Blob (PNG/JPEG/WebP, 5 Mo max). Les commandes disposent des statuts Nouvelle, Confirmée, Expédiée, Livrée et Annulée.
+Ouvrir `/admin/login` avec `ADMIN_EMAIL` et le mot de passe correspondant à `ADMIN_PASSWORD_HASH`. Le dashboard donne accès aux produits, catégories, commandes et demandes de devis. Les produits sont éditables avec statut publié/brouillon, mise en avant, stock, caractéristiques et image principale. Le bouton d'upload envoie les fichiers vers Vercel Blob (PNG/JPEG/WebP, 5 Mo max).
 
 ## Vercel sans Shopify
 
@@ -38,7 +44,7 @@ Ouvrir `/admin/login` avec `ADMIN_EMAIL` et le mot de passe correspondant à `AD
 
 ## WhatsApp
 
-Le numéro public est `212754253515` (`0754 253 515` au format local). Les CTA utilisent `wa.me` et préremplissent le nom du modèle ou de la demande.
+WhatsApp reste disponible uniquement comme canal de contact général. Il n'est plus proposé comme méthode de commande depuis les fiches produit ou le formulaire de panier.
 
 ## Visuels catalogue
 
