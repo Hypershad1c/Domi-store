@@ -1,0 +1,2 @@
+import { NotFoundState } from "@/components/not-found-state";
+export default function ProductNotFound() { return <NotFoundState eyebrow="Produit introuvable" title="Cette serrure n'est plus dans la collection." description="Découvrez les modèles Domi'Lock disponibles ou retournez à la boutique pour choisir une autre serrure intelligente." backHref="/boutique" backLabel="Retour à la boutique" />; }
