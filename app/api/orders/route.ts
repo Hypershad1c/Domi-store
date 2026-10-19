@@ -3,12 +3,16 @@ import { prisma } from "@/lib/prisma";
 import { orderSchema } from "@/lib/validation";
 import { products } from "@/lib/data";
 import { syncOrdersWorkbookToBlob } from "@/lib/orders-export";
-
+import { notifyOrderCreated } from "@/lib/notifications";
 export async function POST(request: Request) {
   try {
     const parsed = orderSchema.safeParse(await request.json());
     if (!parsed.success) return NextResponse.json({ error: "Informations de commande invalides." }, { status: 400 });
-    const { items, ...customer } = parsed.data;
+    const { items, idempotencyKey, ...customer } = parsed.data;
+    try {
+      const existing = await prisma.order.findUnique({ where: { idempotencyKey }, select: { id: true, status: true } });
+      if (existing) return NextResponse.json({ ok: true, id: existing.id, status: existing.status, duplicate: true });
+    } catch {}
     const dbItems = await Promise.all(items.map(async (line) => {
       try {
         const product = await prisma.product.findUnique({ where: { id: line.productId } });
@@ -22,13 +26,23 @@ export async function POST(request: Request) {
     if (!valid.length) return NextResponse.json({ error: "Produit introuvable." }, { status: 400 });
     const total = valid.reduce((sum, item) => sum + item.price * item.quantity, 0);
     try {
-      const order = await prisma.order.create({ data: { ...customer, total, note: customer.note || null, items: { create: valid.map((item) => ({ productId: item.productId, name: item.name, price: item.price, quantity: item.quantity })) } } });
+      const order = await prisma.$transaction(async (tx) => {
+        for (const item of valid) {
+          const updated = await tx.product.updateMany({ where: { id: item.productId, stock: { gte: item.quantity } }, data: { stock: { decrement: item.quantity } } });
+          if (updated.count !== 1) throw new Error("STOCK_INSUFFICIENT");
+        }
+        return tx.order.create({ data: { ...customer, idempotencyKey, total, note: customer.note || null, items: { create: valid.map((item) => ({ productId: item.productId, name: item.name, price: item.price, quantity: item.quantity })) } } });
+      });
       await syncOrdersWorkbookToBlob().catch(() => undefined);
+      await notifyOrderCreated({ id: order.id, customerName: order.customerName, total: order.total }).catch(() => undefined);
       return NextResponse.json({ ok: true, id: order.id, status: order.status });
-    } catch {
+    } catch (error) {
+      if (error instanceof Error && error.message === "STOCK_INSUFFICIENT") return NextResponse.json({ error: "Un ou plusieurs produits ne sont plus disponibles dans la quantité demandée." }, { status: 409 });
+      if (String(error).includes("Unique constraint")) {
+        const existing = await prisma.order.findUnique({ where: { idempotencyKey }, select: { id: true, status: true } });
+        if (existing) return NextResponse.json({ ok: true, id: existing.id, status: existing.status, duplicate: true });
+      }
       return NextResponse.json({ error: "La commande n'a pas pu être enregistrée. La base PostgreSQL est indisponible." }, { status: 503 });
     }
-  } catch {
-    return NextResponse.json({ error: "Impossible d'enregistrer la commande." }, { status: 500 });
-  }
+  } catch { return NextResponse.json({ error: "Impossible d'enregistrer la commande." }, { status: 500 }); }
 }

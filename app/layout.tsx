@@ -1,17 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { SiteHeader } from "@/components/site-header";
-import { WhatsappFloat } from "@/components/whatsapp-float";
 import { CartProvider } from "@/components/cart-provider";
-
-export const metadata: Metadata = {
-  title: { default: "domiStore — Serrures intelligentes pour chaque porte", template: "%s | domiStore" },
-  description: "Serrures intelligentes Domi'Lock au Maroc : empreinte, code, caméra et reconnaissance faciale, avec livraison et installation gratuites.",
-  keywords: ["serrure intelligente", "Domi'Lock", "domiStore", "serrure Maroc", "smart lock"],
-  openGraph: { type: "website", siteName: "domiStore", title: "Serrures intelligentes pour chaque porte", description: "Choisissez un accès plus simple, plus sûr et plus élégant." },
-  twitter: { card: "summary_large_image", title: "domiStore — Smart access" }
-};
-
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="fr"><body><CartProvider><SiteHeader />{children}<WhatsappFloat /><footer className="border-t border-line bg-cloud"><div className="container-page flex flex-col gap-5 py-10 text-sm text-slate-500 md:flex-row md:items-center md:justify-between"><div><strong className="text-ink">domiStore</strong><p className="mt-1">Serrures intelligentes pour chaque porte.</p></div><div className="flex flex-wrap gap-4"><a href="/mentions-legales" className="hover:text-signal">Mentions légales</a><a href="/conditions-de-vente" className="hover:text-signal">Conditions de vente</a><a href="/politique-de-livraison" className="hover:text-signal">Livraison</a><a href="/contact" className="hover:text-signal">Contact</a></div><span>© {new Date().getFullYear()} domiStore</span></div></footer></CartProvider></body></html>;
-}
+export const metadata: Metadata = { title: { default: "domiStore — Serrures intelligentes pour chaque porte", template: "%s | domiStore" }, description: "Serrures intelligentes Domi'Lock au Maroc : empreinte, code, caméra et reconnaissance faciale, avec livraison et installation gratuites.", keywords: ["serrure intelligente", "Domi'Lock", "domiStore", "serrure Maroc", "smart lock"], openGraph: { type: "website", siteName: "domiStore", title: "Serrures intelligentes pour chaque porte", description: "Choisissez un accès plus simple, plus sûr et plus élégant." }, twitter: { card: "summary_large_image", title: "domiStore — Smart access" } };
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) { return <html lang="fr"><body><CartProvider><SiteHeader />{children}<footer className="border-t border-line bg-cloud"><div className="container-page flex flex-col gap-5 py-10 text-sm text-slate-500 md:flex-row md:items-center md:justify-between"><div><strong className="text-ink">domiStore</strong><p className="mt-1">Serrures intelligentes pour chaque porte.</p></div><div className="flex flex-wrap gap-4"><a href="/mentions-legales" className="hover:text-signal">Mentions légales</a><a href="/conditions-de-vente" className="hover:text-signal">Conditions de vente</a><a href="/politique-de-livraison" className="hover:text-signal">Livraison</a><a href="/contact" className="hover:text-signal">Contact</a></div><span>© {new Date().getFullYear()} domiStore</span></div></footer></CartProvider></body></html>; }
