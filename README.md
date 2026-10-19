@@ -65,3 +65,5 @@ Les visuels produits du PDF fourni et les deux assets Google Drive sont intégr�
 Chaque produit peut maintenant avoir une galerie de 1 à 20 images. Dans `/admin/produits`, ajoutez plusieurs fichiers, choisissez l'image principale, supprimez une image ou modifiez l'ordre avec les flèches. La galerie est enregistrée dans `ProductImage` avec `sortOrder` et `isPrimary`.
 
 Sur chaque fiche produit, les images secondaires sont consultables avec des miniatures, des boutons précédent/suivant et un compteur. Cliquer sur l'image ou sur l'icône d'agrandissement ouvre un zoom plein écran ; Échap et les flèches du clavier sont également pris en charge.
+
+La boutique et les fiches produit lisent le catalogue publié depuis PostgreSQL, y compris les images ajoutées depuis `/admin/produits`. Si PostgreSQL est momentanément indisponible, les visuels locaux du catalogue servent de fallback.
