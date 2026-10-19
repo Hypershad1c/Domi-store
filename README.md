@@ -54,8 +54,8 @@ Les notifications admin sont optionnelles via Resend. Renseigner `RESEND_API_KEY
 1. Importer `Hypershad1c/Domi-store` dans Vercel comme projet **Next.js**.
 2. Ajouter les variables de `.env.example` dans Development et Production, notamment `POSTGRES_URL`, `AUTH_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD_HASH`, `BLOB_READ_WRITE_TOKEN` et `NEXT_PUBLIC_SITE_URL`.
 3. Utiliser le build `pnpm install --frozen-lockfile && pnpm build` et le répertoire de sortie par défaut Next.js.
-4. La commande de build exécute `prisma generate`, `prisma migrate deploy`, puis `next build`.
-5. Après le premier déploiement, exécuter le seed depuis un environnement disposant de `POSTGRES_URL` : `pnpm run db:seed`.
+4. La commande de build exécute `prisma generate`, `prisma migrate deploy`, `pnpm run db:seed`, puis `next build`. Le seed crée ou met à jour Domy X5, Domy X5 Slim, Domy M1 Pro et Domy M24, ainsi que leurs images principales.
+5. Pour un déploiement existant, relancer un déploiement après avoir configuré `POSTGRES_URL` afin que les produits apparaissent dans `/admin/produits`. Le seed est idempotent et peut aussi être lancé manuellement avec `pnpm run db:seed`.
 6. Pour `domistore.ma`, ajouter le domaine dans Vercel puis créer les enregistrements DNS indiqués par Vercel.
 
 ## Visuels catalogue
