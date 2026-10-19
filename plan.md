@@ -9,15 +9,15 @@ domiStore est une boutique marocaine de serrures intelligentes Domi'Lock, en fra
 - **Images** : adresses cloud stables (`/manus-storage/...` en Preview ou URL Vercel Blob/Cloudinary en production), jamais de stockage persistant local. Les visuels fournis seront conservés comme actifs remplaçables depuis l'admin.
 - **Authentification** : session admin côté serveur avec cookie `domistore_session`, `httpOnly`, `SameSite=None; Secure` en Preview/public HTTPS, mot de passe bcrypt et secret serveur. Une route de démo non destructive est prévue quand les secrets/DB ne sont pas encore configurés, sans contourner la protection admin.
 - **Validation** : Zod sur les formulaires et mutations serveur.
-- **Communication** : WhatsApp `212754253515`, liens `wa.me` avec messages préremplis.
+- **Communication** : commande entièrement intégrée au formulaire panier/checkout et visible dans l'administration ; WhatsApp est retiré de l'ensemble du site.
 - **Déploiement** : code prêt pour Vercel via `npm run build`/`prisma migrate deploy`; checkpoint Webdev et connexion au dépôt GitHub sélectionné seront traités après validation du code. Aucun connecteur Shopify ne sera activé.
 
 ## Architecture applicative
 
 - `app/` : routes publiques (`/`, `/boutique`, `/produit/[slug]`, `/comparatif`, `/panier`, `/espace-pro`, `/contact`, pages légales) et routes privées `/admin`.
 - `app/api/` : mutations panier/commande/devis, auth admin, upload d'images et endpoints de gestion.
-- `components/` : header, sélecteur de langue, WhatsApp flottant, cartes produit, filtres, panier, formulaires, composants admin.
-- `lib/` : données seed et fallback, Prisma, validation Zod, session, formatage DH, WhatsApp, i18n minimal.
+- `components/` : header, sélecteur de langue, contact, cartes produit, filtres, panier, formulaires, galerie mobile et composants admin.
+- `lib/` : données seed et fallback, Prisma, validation Zod, session, formatage DH et i18n minimal.
 - `prisma/` : schéma PostgreSQL, migrations et seed des 3 serrures + compte admin.
 - `public/` : favicon, manifest, route manifest, icônes légères et documents SEO ; aucune photo produit durable ne sera stockée ici.
 
@@ -56,15 +56,15 @@ Entités : `Product`, `Category`, `ProductImage`, `Order`, `OrderItem`, `QuoteRe
 
 ## Flux principaux
 
-- Accueil → Boutique → fiche produit → panier → formulaire livraison/paiement à la livraison → confirmation et option WhatsApp.
-- Fiche produit → commande WhatsApp avec nom du modèle prérempli.
+- Accueil → Boutique → fiche produit → panier → formulaire livraison/paiement à la livraison → confirmation enregistrée en base et exportable dans Excel.
+- Fiche produit → ajout au panier ; aucun lien de commande WhatsApp.
 - Espace Pro → demande de devis enregistrée et visible dans l'admin.
 - Admin → connexion → dashboard → produits/catégories/commandes/devis ; mutations protégées côté serveur et revalidation des pages publiques.
 - Langue arabe : labels essentiels et direction RTL sont gérés sans dupliquer le catalogue ; le français reste le contenu principal initial.
 
 ## SEO et publication
 
-Chaque page publique aura metadata title/description, Open Graph, canonical conditionnel à `NEXT_PUBLIC_SITE_URL`, contenu HTML SSR et liens internes. `sitemap.xml`, `robots.txt` et `manus-routes.json` seront servis. Le build utilise `prisma generate && prisma migrate deploy && next build` dans l'environnement de déploiement, sans secret codé en dur. `.env.example` documentera la DB, le secret de session, l'admin et l'upload.
+Chaque page publique aura metadata title/description, Open Graph, canonical conditionnel à `NEXT_PUBLIC_SITE_URL`, contenu HTML SSR et liens internes. Chaque fiche produit expose aussi un JSON-LD `Product` avec prix MAD, disponibilité, images et offre. `sitemap.xml`, `robots.txt` et `manus-routes.json` seront servis. Le build utilise `prisma generate && prisma migrate deploy && next build` dans l'environnement de déploiement, sans secret codé en dur. `.env.example` documentera la DB, le secret de session, l'admin et l'upload.
 
 ## Limites explicites
 
