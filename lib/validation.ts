@@ -33,7 +33,9 @@ export const productSchema = z.object({
   featured: z.boolean(),
   hasCamera: z.boolean(),
   faceId: z.boolean(),
-  imageUrl: z.string().url().optional()
+  imageUrl: z.union([z.string().url(), z.string().startsWith("/")]).optional(),
+  imageUrls: z.array(z.union([z.string().url(), z.string().startsWith("/")])).max(20).optional().default([]),
+  primaryImageIndex: z.number().int().min(0).max(19).optional().default(0)
 });
 
 export const orderStatusSchema = z.enum(["NEW", "CONFIRMED", "SHIPPED", "DELIVERED", "CANCELLED"]);

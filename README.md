@@ -61,3 +61,5 @@ Les notifications admin sont optionnelles via Resend. Renseigner `RESEND_API_KEY
 ## Visuels catalogue
 
 Les visuels produits du PDF fourni et les deux assets Google Drive sont intégrés dans `public/`. L'espace admin permet de remplacer les images par des fichiers cloud Vercel Blob sans modifier le code. Si l'upload retourne une erreur de store privé, créer un nouveau Blob Store public dans Vercel, connecter ce store au projet et remplacer `BLOB_READ_WRITE_TOKEN` dans les environnements Production et Preview.
+
+Chaque produit peut maintenant avoir une galerie de 1 à 20 images. Dans `/admin/produits`, ajoutez plusieurs fichiers, choisissez l'image principale, supprimez une image ou modifiez l'ordre avec les flèches. La galerie est enregistrée dans `ProductImage` avec `sortOrder` et `isPrimary`.
