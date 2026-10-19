@@ -52,7 +52,7 @@ Les notifications admin sont optionnelles via Resend. Renseigner `RESEND_API_KEY
 ## Vercel sans Shopify
 
 1. Importer `Hypershad1c/Domi-store` dans Vercel comme projet **Next.js**.
-2. Ajouter les variables de `.env.example` dans Development et Production, notamment `POSTGRES_URL`, `AUTH_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD_HASH`, `BLOB_READ_WRITE_TOKEN` et `NEXT_PUBLIC_SITE_URL`.
+2. Ajouter les variables de `.env.example` dans Development et Production, notamment `POSTGRES_URL`, `AUTH_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD_HASH`, `BLOB_READ_WRITE_TOKEN` et `NEXT_PUBLIC_SITE_URL`. Le store Vercel Blob utilisé pour les images produit doit être configuré en **public** : les images sont affichées directement sur la boutique. Un token provenant d'un store privé ne peut pas être utilisé avec l'upload public.
 3. Utiliser le build `pnpm install --frozen-lockfile && pnpm build` et le répertoire de sortie par défaut Next.js.
 4. La commande de build exécute `prisma generate`, `prisma migrate deploy`, `pnpm run db:seed`, puis `next build`. Le seed crée ou met à jour Domy X5, Domy X5 Slim, Domy M1 Pro et Domy M24, ainsi que leurs images principales.
 5. Pour un déploiement existant, relancer un déploiement après avoir configuré `POSTGRES_URL` afin que les produits apparaissent dans `/admin/produits`. Le seed est idempotent et peut aussi être lancé manuellement avec `pnpm run db:seed`.
@@ -60,4 +60,4 @@ Les notifications admin sont optionnelles via Resend. Renseigner `RESEND_API_KEY
 
 ## Visuels catalogue
 
-Les visuels produits du PDF fourni et les deux assets Google Drive sont intégrés dans `public/`. L'espace admin permet de remplacer les images par des fichiers cloud Vercel Blob sans modifier le code.
+Les visuels produits du PDF fourni et les deux assets Google Drive sont intégrés dans `public/`. L'espace admin permet de remplacer les images par des fichiers cloud Vercel Blob sans modifier le code. Si l'upload retourne une erreur de store privé, créer un nouveau Blob Store public dans Vercel, connecter ce store au projet et remplacer `BLOB_READ_WRITE_TOKEN` dans les environnements Production et Preview.
