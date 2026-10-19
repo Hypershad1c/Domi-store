@@ -67,3 +67,7 @@ Chaque produit peut maintenant avoir une galerie de 1 à 20 images. Dans `/admin
 Sur chaque fiche produit, les images secondaires sont consultables avec des miniatures, des boutons précédent/suivant et un compteur. Cliquer sur l'image ou sur l'icône d'agrandissement ouvre un zoom plein écran ; Échap et les flèches du clavier sont également pris en charge.
 
 La boutique et les fiches produit lisent le catalogue publié depuis PostgreSQL, y compris les images ajoutées depuis `/admin/produits`. Si PostgreSQL est momentanément indisponible, les visuels locaux du catalogue servent de fallback.
+
+## Refonte Premium 2.0
+
+La page d'accueil comprend maintenant une palette navy/bleu/cyan/mint cohérente, des animations accessibles avec `prefers-reduced-motion`, une bande de garanties, un parcours en trois étapes, des témoignages, une FAQ et un appel à l'action projet. Les cartes produit affichent des badges, le stock, la technologie principale et une seconde image au survol. Le layout contient aussi un footer enrichi et les données structurées Organization pour le SEO.
