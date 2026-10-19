@@ -5,6 +5,7 @@
     {"path":"/produit/:slug","title":"Produit domiStore"},
     {"path":"/comparatif","title":"Comparatif des serrures"},
     {"path":"/panier","title":"Panier et commande"},
+    {"path":"/service-apres-vente","title":"Service après-vente"},
     {"path":"/espace-pro","title":"Espace Pro"},
     {"path":"/contact","title":"Contact domiStore"},
     {"path":"/mentions-legales","title":"Mentions légales"},
@@ -14,6 +15,7 @@
     {"path":"/admin","title":"Administration domiStore"},
     {"path":"/admin/produits","title":"Produits — Administration"},
     {"path":"/admin/commandes","title":"Commandes — Administration"},
-    {"path":"/admin/devis","title":"Devis — Administration"}
+    {"path":"/admin/devis","title":"Devis — Administration"},
+    {"path":"/admin/sav","title":"SAV — Administration"}
   ]
 }

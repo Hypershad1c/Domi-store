@@ -119,3 +119,25 @@ model QuoteRequest {
   message      String
   createdAt    DateTime @default(now())
 }
+
+model SupportRequest {
+  id            String        @id @default(cuid())
+  customerName  String
+  phone         String
+  city          String
+  orderRef      String?
+  model         String?
+  issue         String
+  preferredTime String?
+  status        SupportStatus @default(NEW)
+  adminNote     String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+enum SupportStatus {
+  NEW
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
