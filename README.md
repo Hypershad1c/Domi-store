@@ -33,6 +33,10 @@ Le bouton **Télécharger Excel** génère `domistore-commandes.xlsx` à partir 
 
 Le catalogue contient Domy X5 (1 660 DH), Domy X5 Slim (1 699 DH), Domy M1 Pro (2 599 DH) et Domy M24 (3 199 DH). Le nouveau X5 Slim inclut empreinte, code, carte IC/RFID, clé mécanique, application Tuya, autonomie jusqu'à 12 mois, livraison/installation et garantie 5 ans.
 
+## Service après-vente
+
+La page `/service-apres-vente` permet d'envoyer une demande de diagnostic ou d'intervention après l'installation. Les demandes sont enregistrées dans PostgreSQL et suivies depuis `/admin/sav` avec les statuts `NEW`, `IN_PROGRESS`, `RESOLVED` et `CLOSED`. Les migrations doivent être appliquées avec `pnpm exec prisma migrate deploy` avant utilisation en production.
+
 ## Animations et identité
 
 Le logo fourni est utilisé dans l'en-tête et comme logo de projet. La page d'accueil utilise des animations de révélation, flottement et transitions de survol, avec respect de `prefers-reduced-motion`.
