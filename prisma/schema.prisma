@@ -65,6 +65,7 @@ model ProductImage {
 
 model Order {
   id           String      @id @default(cuid())
+  idempotencyKey String?    @unique
   customerName String
   phone        String
   city         String
@@ -75,6 +76,7 @@ model Order {
   items        OrderItem[]
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
+  auditLogs    OrderAudit[]
 }
 
 enum OrderStatus {
@@ -94,6 +96,17 @@ model OrderItem {
   quantity  Int
   order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product   Product @relation(fields: [productId], references: [id])
+}
+
+model OrderAudit {
+  id         String   @id @default(cuid())
+  orderId    String
+  adminId    String?
+  action     String
+  fromStatus String?
+  toStatus   String?
+  createdAt  DateTime @default(now())
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
 model QuoteRequest {

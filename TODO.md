@@ -1,7 +1,10 @@
 
-## 7. Commande intégrée et export Excel
-- [x] La commande depuis une fiche produit passe par le panier et le formulaire intégré ; le bouton « Commander via WhatsApp » est supprimé.
-- [x] Le formulaire intégré demande nom, téléphone, ville, adresse et remarque, enregistre la commande dans PostgreSQL et affiche une référence après succès.
-- [x] L’administration affiche les commandes et permet de les confirmer avec le statut `Confirmée`, puis de les passer à `Expédiée`, `Livrée` ou `Annulée`.
-- [x] Le bouton « Télécharger Excel » génère `domistore-commandes.xlsx` avec les informations client, produits, total, statut et remarques.
-- [x] Si `BLOB_READ_WRITE_TOKEN` est configuré, le classeur Excel privé est resynchronisé automatiquement après chaque nouvelle commande ou changement de statut.
+## 8. Identité, catalogue et robustesse production
+- [x] Le logo fourni par Google Drive est intégré dans l'en-tête et configuré comme logo durable du projet.
+- [x] Le nouveau produit Domy X5 Slim à 1 699 DH est disponible dans le catalogue, le seed PostgreSQL, la fiche dynamique et le comparatif.
+- [x] WhatsApp est retiré de tout le site public : bouton flottant, page contact, livraison, conditions de vente et options de commande.
+- [x] Des animations de révélation, flottement et survol sont ajoutées avec respect de `prefers-reduced-motion`.
+- [x] Les commandes utilisent une clé d'idempotence, une vérification de stock transactionnelle et un journal `OrderAudit`.
+- [x] Les erreurs de changement de statut sont visibles dans l'admin, avec restauration de l'ancien statut en cas d'échec.
+- [x] La connexion admin est limitée après cinq tentatives invalides sur une fenêtre de quinze minutes et nettoie les sessions expirées.
+- [x] Les commandes admin disposent d'une recherche et d'un filtre par statut ; les notifications Resend sont disponibles lorsqu'elles sont configurées.
