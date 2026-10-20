@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, LifeBuoy, LogOut, Package, ReceiptText, Tags } from "lucide-react";
+import { Boxes, LayoutDashboard, LifeBuoy, LogOut, Package, ReceiptText, Tags } from "lucide-react";
 
 const links = [
   { href: "/admin", label: "Vue d'ensemble", icon: LayoutDashboard },
   { href: "/admin/produits", label: "Produits", icon: Package },
+  { href: "/admin/inventaire", label: "Inventaire", icon: Boxes },
   { href: "/admin/commandes", label: "Commandes", icon: ReceiptText },
   { href: "/admin/devis", label: "Demandes de devis", icon: Tags },
   { href: "/admin/sav", label: "Service après-vente", icon: LifeBuoy },

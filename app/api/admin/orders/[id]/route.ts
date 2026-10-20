@@ -11,15 +11,16 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   if (!parsed.success) return NextResponse.json({ error: "Statut invalide" }, { status: 400 });
   const { id } = await params;
   try {
-    const current = await prisma.order.findUnique({ where: { id }, select: { status: true } });
+    const current = await prisma.order.findUnique({ where: { id }, select: { status: true, customerName: true, customerEmail: true } });
     if (!current) return NextResponse.json({ error: "Commande introuvable" }, { status: 404 });
+    if (current.status === parsed.data) return NextResponse.json({ id, status: current.status });
     const order = await prisma.$transaction(async (tx) => {
       const updated = await tx.order.update({ where: { id }, data: { status: parsed.data } });
       await tx.orderAudit.create({ data: { orderId: id, adminId: admin.id, action: "STATUS_CHANGED", fromStatus: current.status, toStatus: parsed.data } });
       return updated;
     });
     await syncOrdersWorkbookToBlob().catch(() => undefined);
-    await notifyOrderStatusChanged({ id: order.id, status: order.status }, current.status).catch(() => undefined);
+    await notifyOrderStatusChanged({ id: order.id, status: order.status, customerName: order.customerName, customerEmail: order.customerEmail }, current.status).catch(() => undefined);
     return NextResponse.json(order);
   } catch { return NextResponse.json({ error: "Impossible de sauvegarder le statut." }, { status: 503 }); }
 }

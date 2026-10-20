@@ -16,7 +16,8 @@ async function main() {
     const { category: categoryName, image, ...productData } = item;
     const category = await prisma.category.upsert({ where: { slug: categorySlug(categoryName) }, update: { name: categoryName }, create: { name: categoryName, slug: categorySlug(categoryName) } });
     const product = await prisma.product.upsert({ where: { slug: item.slug }, update: { ...productData, categoryId: category.id, features: productData.features }, create: { ...productData, categoryId: category.id, features: productData.features } });
-    await prisma.productImage.upsert({ where: { id: `${product.id}-primary` }, update: { url: image, alt: item.name, isPrimary: true }, create: { id: `${product.id}-primary`, productId: product.id, url: image, alt: item.name, isPrimary: true, sortOrder: 0 } });
+    const primaryImage = await prisma.productImage.findFirst({ where: { productId: product.id, isPrimary: true }, select: { id: true } });
+    if (!primaryImage) await prisma.productImage.create({ data: { id: `${product.id}-primary`, productId: product.id, url: image, alt: item.name, isPrimary: true, sortOrder: 0 } });
   }
 }
 main().finally(() => prisma.$disconnect());

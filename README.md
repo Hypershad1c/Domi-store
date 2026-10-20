@@ -47,7 +47,11 @@ WhatsApp a été retiré de l'ensemble du site : aucun bouton flottant, lien de 
 
 ## Notifications email
 
-Les notifications admin sont optionnelles via Resend. Renseigner `RESEND_API_KEY`, `ADMIN_NOTIFICATION_EMAIL` et éventuellement `NOTIFICATION_FROM_EMAIL` pour recevoir un email à chaque nouvelle commande et à chaque changement de statut.
+Les notifications email sont optionnelles via Resend. Renseigner `RESEND_API_KEY`, `ADMIN_NOTIFICATION_EMAIL` et éventuellement `NOTIFICATION_FROM_EMAIL` pour prévenir l'équipe à chaque commande et changement de statut. Le formulaire de commande accepte une adresse email facultative pour envoyer au client son reçu et chaque changement de statut. `LOW_STOCK_THRESHOLD` définit le seuil d'alerte stock (3 par défaut) : l'équipe reçoit un email quand une vente ou un ajustement fait passer le stock sous ce seuil.
+
+## Inventaire
+
+L'administration `/admin/inventaire` liste les produits publiés au seuil d'alerte et les 30 derniers mouvements. Les ventes et ajustements manuels sont historisés avec le stock avant/après et la commande associée. Le stock se modifie depuis la fiche produit dans `/admin/produits`.
 
 ## Vercel sans Shopify
 

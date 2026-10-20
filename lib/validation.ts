@@ -3,6 +3,7 @@ import { z } from "zod";
 export const orderSchema = z.object({
   idempotencyKey: z.string().min(12).max(100),
   customerName: z.string().min(2),
+  customerEmail: z.union([z.string().trim().email(), z.literal("")]).optional().default(""),
   phone: z.string().min(8),
   city: z.string().min(2),
   address: z.string().min(5),
