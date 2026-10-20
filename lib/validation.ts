@@ -40,6 +40,11 @@ export const productSchema = z.object({
 
 export const orderStatusSchema = z.enum(["NEW", "CONFIRMED", "SHIPPED", "DELIVERED", "CANCELLED"]);
 
+export const orderTrackingSchema = z.object({
+  reference: z.string().trim().min(12).max(100),
+  phone: z.string().trim().min(8).max(30)
+});
+
 export const supportRequestSchema = z.object({
   customerName: z.string().min(2).max(120),
   phone: z.string().min(8).max(30),
