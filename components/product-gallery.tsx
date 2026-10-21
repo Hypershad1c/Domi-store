@@ -35,9 +35,9 @@ export function ProductGallery({ images, name }: { images: string[]; name: strin
   }, [zoom, safeImages.length]);
 
   return <>
-    <div className="rounded-[2rem] border border-line bg-cloud p-4">
+    <div className="min-w-0 max-w-full rounded-[2rem] border border-line bg-cloud p-3 sm:p-4">
       <div className="group relative overflow-hidden rounded-[1.5rem] bg-white" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
-        <img key={safeImages[current]} src={safeImages[current]} alt={`${name} — image ${current + 1}`} className="h-[420px] w-full cursor-zoom-in select-none object-cover transition duration-500 group-hover:scale-[1.02] animate-gallery-image sm:h-[560px]" draggable={false} onClick={() => setZoom(true)} />
+        <img key={safeImages[current]} src={safeImages[current]} alt={`${name} — image ${current + 1}`} className="h-[min(100vw,360px)] w-full max-w-full cursor-zoom-in select-none object-cover transition duration-500 group-hover:scale-[1.02] animate-gallery-image sm:h-[420px] lg:h-[560px]" draggable={false} onClick={() => setZoom(true)} />
         <button type="button" aria-label="Agrandir l'image" onClick={() => setZoom(true)} className="absolute right-4 top-4 grid h-10 w-10 place-items-center rounded-full bg-white/90 text-ink shadow-card transition duration-200 hover:scale-105 hover:bg-signal hover:text-white active:scale-90"><Maximize2 size={17} /></button>
         {safeImages.length > 1 && <>
           <button type="button" aria-label="Image précédente" onClick={previous} className="absolute left-3 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-white/90 text-ink shadow-card transition duration-200 hover:scale-105 hover:bg-signal hover:text-white active:scale-90"><ChevronLeft size={20} /></button>
