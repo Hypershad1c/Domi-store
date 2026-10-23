@@ -24,7 +24,7 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
           <span className="rounded-full bg-white/90 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[.12em] text-signal shadow-sm backdrop-blur">{badge}</span>
           <span className="rounded-full bg-ink/85 px-2.5 py-1.5 text-[10px] font-bold text-white">0{index + 1}</span>
         </div>
-        <img src={product.images[0]} alt={`Serrure intelligente ${product.name}`} className="h-64 w-full object-cover transition duration-700 group-hover:scale-[1.05] group-hover:opacity-0" />
+        <img src={product.images[0]} alt={`Serrure intelligente ${product.name}`} className={`h-64 w-full object-cover transition duration-700 group-hover:scale-[1.05] ${product.images[1] ? "group-hover:opacity-0" : ""}`} />
         {product.images[1] && <img src={product.images[1]} alt={`${product.name} vue secondaire`} className="absolute inset-0 h-64 w-full object-cover opacity-0 transition duration-700 group-hover:scale-[1.05] group-hover:opacity-100" />}
         <span className="absolute bottom-4 right-4 rounded-full bg-white/90 px-3 py-1.5 text-[10px] font-bold text-slate-600 shadow-sm">{product.images.length} vue{product.images.length > 1 ? "s" : ""}</span>
       </Link>

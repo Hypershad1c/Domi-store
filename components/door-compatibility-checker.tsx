@@ -111,7 +111,7 @@ export function DoorCompatibilityChecker({ products }: { products: Product[] }) 
           {recommendsM24 && thickness === "in-range" && <p className="mt-4 rounded-xl bg-white p-3 text-sm leading-6 text-emerald-800"><strong>Bonne nouvelle :</strong> l’épaisseur indiquée se trouve dans la plage annoncée pour le Domy M24 (35 à 120 mm). L’installateur vérifiera aussi le type de porte et la serrure existante.</p>}
           {recommendsM24 && (thickness === "under" || thickness === "over") && <p className="mt-4 rounded-xl bg-amber-50 p-3 text-sm leading-6 text-amber-900"><strong>À vérifier :</strong> le Domy M24 est annoncé pour des portes de 35 à 120 mm. Votre mesure est en dehors de cette plage ; contactez notre équipe avant de choisir ce modèle.</p>}
           {recommendsM24 && thickness === "unknown" && <p className="mt-4 rounded-xl bg-white p-3 text-sm leading-6 text-slate-600">Une mesure nous aidera à confirmer le Domy M24, annoncé pour les portes de 35 à 120 mm. Si vous ne pouvez pas mesurer, notre équipe peut vous guider.</p>}
-          <div className="mt-5 grid gap-4 sm:grid-cols-2">{recommendations.map((product) => <ProductCard key={product.id} product={product} index={0} />)}</div>
+          <div className="mt-5 grid gap-4 sm:grid-cols-2">{recommendations.map((product, index) => <ProductCard key={product.id} product={product} index={index} />)}</div>
           <Link href="/contact" className="mt-5 inline-flex items-center gap-2 text-sm font-extrabold text-signal hover:text-ink">Demander une vérification à notre équipe <ArrowRight size={16} /></Link>
         </section>}
       </form>
