@@ -117,6 +117,26 @@ export function DoorCompatibilityChecker({ products }: { products: Product[] }) 
       </form>
 
       <aside className="rounded-2xl border border-line bg-cloud p-5 sm:p-6">
+        <div className="mb-5 overflow-hidden rounded-xl border border-blue-100 bg-white p-3">
+          <svg viewBox="0 0 280 180" role="img" aria-labelledby="door-guide-title door-guide-desc" className="h-auto w-full">
+            <title id="door-guide-title">Mesurer l’épaisseur de la porte</title>
+            <desc id="door-guide-desc">Vue en perspective d’une porte. Une flèche indique le chant à mesurer.</desc>
+            <defs>
+              <linearGradient id="door-face" x1="0" x2="1" y1="0" y2="1"><stop stopColor="#F8FAFC" /><stop offset="1" stopColor="#EAF1FC" /></linearGradient>
+              <marker id="measure-arrow" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto-start-reverse"><path d="M0 0L7 3.5L0 7" fill="none" stroke="#2563EB" strokeWidth="1.2" /></marker>
+            </defs>
+            <path d="M56 25L78 14H202L180 25V156L56 166Z" fill="#DCE8F7" stroke="#B9CBE2" strokeWidth="1.5" />
+            <rect x="36" y="25" width="144" height="141" rx="10" fill="url(#door-face)" stroke="#94A9C4" strokeWidth="2" />
+            <rect x="49" y="39" width="118" height="52" rx="7" fill="none" stroke="#CBD7E6" strokeWidth="2" />
+            <rect x="49" y="101" width="118" height="50" rx="7" fill="none" stroke="#CBD7E6" strokeWidth="2" />
+            <circle cx="158" cy="98" r="5" fill="#2563EB" />
+            <path d="M183 57L212 43" stroke="#2563EB" strokeWidth="2" markerStart="url(#measure-arrow)" markerEnd="url(#measure-arrow)" />
+            <path d="M196 51L220 73" stroke="#94A9C4" strokeWidth="1.5" />
+            <rect x="201" y="72" width="69" height="29" rx="9" fill="#EFF6FF" />
+            <text x="235.5" y="90" textAnchor="middle" fill="#1D4ED8" fontSize="10" fontWeight="700">Mesurez ici</text>
+            <text x="36" y="178" fill="#64748B" fontSize="10" fontWeight="600">Le chant de la porte</text>
+          </svg>
+        </div>
         <div className="flex items-center gap-2 text-sm font-extrabold text-ink"><ShieldCheck className="text-signal" size={19} />Conseil transparent</div>
         <p className="mt-3 text-sm leading-6 text-slate-600">La fiche technique disponible précise l’épaisseur de porte du Domy M24. Pour les autres modèles, notre installateur confirme les dimensions et le mécanisme de votre porte avant la pose.</p>
         <details className="group mt-5 border-t border-line pt-4">

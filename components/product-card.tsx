@@ -19,13 +19,13 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
 
   return (
     <article className="group overflow-hidden rounded-2xl border border-line bg-white shadow-card transition duration-500 hover:-translate-y-2 hover:border-blue-200 hover:shadow-soft motion-safe:animate-card-enter" style={{ animationDelay: `${Math.min(index * 90, 360)}ms` }}>
-      <Link href={`/produit/${product.slug}`} className="relative block overflow-hidden bg-cloud">
+      <Link href={`/produit/${product.slug}`} className="product-stage relative block overflow-hidden">
         <div className="absolute left-4 top-4 z-10 flex items-center gap-2">
           <span className="rounded-full bg-white/90 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[.12em] text-signal shadow-sm backdrop-blur">{badge}</span>
           <span className="rounded-full bg-ink/85 px-2.5 py-1.5 text-[10px] font-bold text-white">0{index + 1}</span>
         </div>
-        <img src={product.images[0]} alt={`Serrure intelligente ${product.name}`} className={`h-64 w-full object-cover transition duration-700 group-hover:scale-[1.05] ${product.images[1] ? "group-hover:opacity-0" : ""}`} />
-        {product.images[1] && <img src={product.images[1]} alt={`${product.name} vue secondaire`} className="absolute inset-0 h-64 w-full object-cover opacity-0 transition duration-700 group-hover:scale-[1.05] group-hover:opacity-100" />}
+        <img src={product.images[0]} alt={`Serrure intelligente ${product.name}`} className={`h-64 w-full rounded-2xl object-cover p-2 transition duration-700 group-hover:scale-[1.05] ${product.images[1] ? "group-hover:opacity-0" : ""}`} />
+        {product.images[1] && <img src={product.images[1]} alt={`${product.name} vue secondaire`} className="absolute inset-0 h-64 w-full rounded-2xl object-cover p-2 opacity-0 transition duration-700 group-hover:scale-[1.05] group-hover:opacity-100" />}
         <span className="absolute bottom-4 right-4 rounded-full bg-white/90 px-3 py-1.5 text-[10px] font-bold text-slate-600 shadow-sm">{product.images.length} vue{product.images.length > 1 ? "s" : ""}</span>
       </Link>
       <div className="p-5">
