@@ -4,8 +4,8 @@ import { getAdmin } from "@/lib/session";
 import { productSchema } from "@/lib/validation";
 import { notifyLowStock } from "@/lib/notifications";
 import { lowStockThreshold } from "@/lib/inventory";
+import { getOrCreateCategory } from "@/lib/categories";
 
-function categorySlug(name: string) { return name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-"); }
 function isDuplicateKey(error: unknown) { return typeof error === "object" && error !== null && "code" in error && error.code === "P2002"; }
 function duplicateField(error: unknown) {
   if (typeof error !== "object" || error === null || !("meta" in error)) return "";
@@ -35,7 +35,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   try {
     const slugInUse = await prisma.product.findFirst({ where: { slug: productData.slug, id: { not: id } }, select: { id: true } });
     if (slugInUse) return NextResponse.json({ error: "Un autre produit utilise déjà ce slug.", details: [{ field: "slug", message: "Choisissez un slug unique. Le slug actuel de ce produit peut être conservé." }] }, { status: 409 });
-    const category = await prisma.category.upsert({ where: { slug: categorySlug(categoryName) }, update: { name: categoryName }, create: { name: categoryName, slug: categorySlug(categoryName) } });
+    const category = await getOrCreateCategory(categoryName);
     const result = await prisma.$transaction(async (tx) => {
       const current = await tx.product.findUnique({ where: { id }, select: { stock: true } });
       if (!current) return null;
