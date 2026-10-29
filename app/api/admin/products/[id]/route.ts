@@ -7,6 +7,16 @@ import { lowStockThreshold } from "@/lib/inventory";
 
 function categorySlug(name: string) { return name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-"); }
 function isDuplicateKey(error: unknown) { return typeof error === "object" && error !== null && "code" in error && error.code === "P2002"; }
+function duplicateField(error: unknown) {
+  if (typeof error !== "object" || error === null || !("meta" in error)) return "";
+  const target = (error as { meta?: { target?: unknown } }).meta?.target;
+  return Array.isArray(target) ? target.join(" ") : String(target || "");
+}
+function isProductSlugDuplicate(error: unknown) {
+  if (!isDuplicateKey(error)) return false;
+  const field = duplicateField(error).toLowerCase();
+  return field.includes("product_slug") || field.trim() === "slug";
+}
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   if (!(await getAdmin())) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
@@ -23,6 +33,8 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const { category: categoryName, imageUrl, imageUrls, primaryImageIndex, ...productData } = parsed.data;
   const urls = imageUrls.length ? imageUrls : imageUrl ? [imageUrl] : [];
   try {
+    const slugInUse = await prisma.product.findFirst({ where: { slug: productData.slug, id: { not: id } }, select: { id: true } });
+    if (slugInUse) return NextResponse.json({ error: "Un autre produit utilise déjà ce slug.", details: [{ field: "slug", message: "Choisissez un slug unique. Le slug actuel de ce produit peut être conservé." }] }, { status: 409 });
     const category = await prisma.category.upsert({ where: { slug: categorySlug(categoryName) }, update: { name: categoryName }, create: { name: categoryName, slug: categorySlug(categoryName) } });
     const result = await prisma.$transaction(async (tx) => {
       const current = await tx.product.findUnique({ where: { id }, select: { stock: true } });
@@ -53,7 +65,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     const product = await prisma.product.findUnique({ where: { id }, include: { category: true, images: { select: { id: true, url: true, alt: true, sortOrder: true, isPrimary: true, contentType: true }, orderBy: { sortOrder: "asc" } } } });
     return NextResponse.json(product);
   } catch (error) {
-    if (isDuplicateKey(error)) return NextResponse.json({ error: "Un produit avec ce slug existe déjà.", details: [{ field: "slug", message: "Choisissez un slug unique." }] }, { status: 409 });
+    if (isProductSlugDuplicate(error)) return NextResponse.json({ error: "Un autre produit utilise déjà ce slug.", details: [{ field: "slug", message: "Choisissez un slug unique. Le slug actuel de ce produit peut être conservé." }] }, { status: 409 });
     console.error("Admin product update failed", error);
     return NextResponse.json({ error: "La base de données n’a pas pu enregistrer ce produit.", details: [{ field: "serveur", message: error instanceof Error ? error.message : "Erreur inconnue." }] }, { status: 500 });
   }

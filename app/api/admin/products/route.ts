@@ -7,6 +7,16 @@ import { lowStockThreshold } from "@/lib/inventory";
 
 function categorySlug(name: string) { return name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-"); }
 function isDuplicateKey(error: unknown) { return typeof error === "object" && error !== null && "code" in error && error.code === "P2002"; }
+function duplicateField(error: unknown) {
+  if (typeof error !== "object" || error === null || !("meta" in error)) return "";
+  const target = (error as { meta?: { target?: unknown } }).meta?.target;
+  return Array.isArray(target) ? target.join(" ") : String(target || "");
+}
+function isProductSlugDuplicate(error: unknown) {
+  if (!isDuplicateKey(error)) return false;
+  const field = duplicateField(error).toLowerCase();
+  return field.includes("product_slug") || field.trim() === "slug";
+}
 
 export async function GET() {
   if (!(await getAdmin())) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
@@ -29,6 +39,8 @@ export async function POST(request: Request) {
   const { category: categoryName, imageUrl, imageUrls, primaryImageIndex, ...productData } = parsed.data;
   const urls = imageUrls.length ? imageUrls : imageUrl ? [imageUrl] : [];
   try {
+    const slugInUse = await prisma.product.findUnique({ where: { slug: productData.slug }, select: { id: true } });
+    if (slugInUse) return NextResponse.json({ error: "Un produit avec ce slug existe déjà.", details: [{ field: "slug", message: "Choisissez un slug unique." }] }, { status: 409 });
     const category = await prisma.category.upsert({ where: { slug: categorySlug(categoryName) }, update: { name: categoryName }, create: { name: categoryName, slug: categorySlug(categoryName) } });
     const product = await prisma.product.create({
       data: {
@@ -43,7 +55,7 @@ export async function POST(request: Request) {
     if (product.stock <= lowStockThreshold) await notifyLowStock({ name: product.name, stock: product.stock, threshold: lowStockThreshold }).catch(() => undefined);
     return NextResponse.json(product, { status: 201 });
   } catch (error) {
-    if (isDuplicateKey(error)) return NextResponse.json({ error: "Un produit avec ce slug existe déjà.", details: [{ field: "slug", message: "Choisissez un slug unique." }] }, { status: 409 });
+    if (isProductSlugDuplicate(error)) return NextResponse.json({ error: "Un produit avec ce slug existe déjà.", details: [{ field: "slug", message: "Choisissez un slug unique." }] }, { status: 409 });
     console.error("Admin product creation failed", error);
     return NextResponse.json({ error: "La base de données n’a pas pu créer ce produit.", details: [{ field: "serveur", message: error instanceof Error ? error.message : "Erreur inconnue." }] }, { status: 500 });
   }
