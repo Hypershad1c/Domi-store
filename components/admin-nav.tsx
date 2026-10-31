@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Boxes, LayoutDashboard, LifeBuoy, LogOut, Package, ReceiptText, Tags } from "lucide-react";
+import { Boxes, ClipboardList, LayoutDashboard, LifeBuoy, LogOut, Package, ReceiptText, Tags } from "lucide-react";
 
 const links = [
   { href: "/admin", label: "Vue d'ensemble", icon: LayoutDashboard },
@@ -11,6 +11,7 @@ const links = [
   { href: "/admin/commandes", label: "Commandes", icon: ReceiptText },
   { href: "/admin/devis", label: "Demandes de devis", icon: Tags },
   { href: "/admin/sav", label: "Service après-vente", icon: LifeBuoy },
+  { href: "/admin/journal", label: "Journal d’activité", icon: ClipboardList },
 ];
 
 export function AdminNav({ email }: { email: string }) {

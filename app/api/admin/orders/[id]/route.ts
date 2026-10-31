@@ -4,7 +4,8 @@ import { getAdmin } from "@/lib/session";
 import { orderStatusSchema } from "@/lib/validation";
 import { syncOrdersWorkbookToBlob } from "@/lib/orders-export";
 import { notifyOrderStatusChanged } from "@/lib/notifications";
-export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
+import { runAuditedAdminAction } from "@/lib/admin-audit";
+async function updateOrderStatusHandler(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const admin = await getAdmin();
   if (!admin) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
   const parsed = orderStatusSchema.safeParse((await request.json()).status);
@@ -23,4 +24,12 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     await notifyOrderStatusChanged({ id: order.id, status: order.status, customerName: order.customerName, customerEmail: order.customerEmail }, current.status).catch(() => undefined);
     return NextResponse.json(order);
   } catch { return NextResponse.json({ error: "Impossible de sauvegarder le statut." }, { status: 503 }); }
+}
+
+export async function PATCH(request: Request, context: { params: Promise<{ id: string }> }) {
+  const admin = await getAdmin();
+  if (!admin) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+  const { id } = await context.params;
+  const order = await prisma.order.findUnique({ where: { id }, select: { customerName: true } }).catch(() => null);
+  return runAuditedAdminAction({ request, admin, action: "UPDATE", entityType: "Commande", entityId: id, entityName: order?.customerName, run: () => updateOrderStatusHandler(request, context) });
 }

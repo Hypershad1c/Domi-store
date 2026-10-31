@@ -5,6 +5,7 @@ import { productSchema } from "@/lib/validation";
 import { notifyLowStock } from "@/lib/notifications";
 import { lowStockThreshold } from "@/lib/inventory";
 import { getOrCreateCategory } from "@/lib/categories";
+import { runAuditedAdminAction } from "@/lib/admin-audit";
 
 function isDuplicateKey(error: unknown) { return typeof error === "object" && error !== null && "code" in error && error.code === "P2002"; }
 function duplicateField(error: unknown) {
@@ -18,7 +19,7 @@ function isProductSlugDuplicate(error: unknown) {
   return field.includes("product_slug") || field.trim() === "slug";
 }
 
-export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
+async function updateProductHandler(request: Request, { params }: { params: Promise<{ id: string }> }) {
   if (!(await getAdmin())) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
   let body: unknown;
   try { body = await request.json(); }
@@ -71,7 +72,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   }
 }
 
-export async function DELETE(_: Request, { params }: { params: Promise<{ id: string }> }) {
+async function deleteProductHandler(_: Request, { params }: { params: Promise<{ id: string }> }) {
   if (!(await getAdmin())) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
   const { id } = await params;
   try {
@@ -81,4 +82,19 @@ export async function DELETE(_: Request, { params }: { params: Promise<{ id: str
     console.error("Admin product delete failed", error);
     return NextResponse.json({ error: "Impossible de supprimer ce produit.", details: [{ field: "serveur", message: error instanceof Error ? error.message : "Erreur inconnue." }] }, { status: 500 });
   }
+}
+
+export async function PATCH(request: Request, context: { params: Promise<{ id: string }> }) {
+  const admin = await getAdmin();
+  if (!admin) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+  const { id } = await context.params;
+  return runAuditedAdminAction({ request, admin, action: "UPDATE", entityType: "Produit", entityId: id, run: () => updateProductHandler(request, context) });
+}
+
+export async function DELETE(request: Request, context: { params: Promise<{ id: string }> }) {
+  const admin = await getAdmin();
+  if (!admin) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+  const { id } = await context.params;
+  const product = await prisma.product.findUnique({ where: { id }, select: { name: true } }).catch(() => null);
+  return runAuditedAdminAction({ request, admin, action: "DELETE", entityType: "Produit", entityId: id, entityName: product?.name, run: () => deleteProductHandler(request, context) });
 }

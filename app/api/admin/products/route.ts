@@ -5,6 +5,7 @@ import { productSchema } from "@/lib/validation";
 import { notifyLowStock } from "@/lib/notifications";
 import { lowStockThreshold } from "@/lib/inventory";
 import { getOrCreateCategory } from "@/lib/categories";
+import { runAuditedAdminAction } from "@/lib/admin-audit";
 
 function isDuplicateKey(error: unknown) { return typeof error === "object" && error !== null && "code" in error && error.code === "P2002"; }
 function duplicateField(error: unknown) {
@@ -24,7 +25,7 @@ export async function GET() {
   return NextResponse.json(data);
 }
 
-export async function POST(request: Request) {
+async function createProductHandler(request: Request) {
   if (!(await getAdmin())) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
   let body: unknown;
   try { body = await request.json(); }
@@ -59,4 +60,10 @@ export async function POST(request: Request) {
     console.error("Admin product creation failed", error);
     return NextResponse.json({ error: "La base de données n’a pas pu créer ce produit.", details: [{ field: "serveur", message: error instanceof Error ? error.message : "Erreur inconnue." }] }, { status: 500 });
   }
+}
+
+export async function POST(request: Request) {
+  const admin = await getAdmin();
+  if (!admin) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+  return runAuditedAdminAction({ request, admin, action: "CREATE", entityType: "Produit", run: () => createProductHandler(request) });
 }
