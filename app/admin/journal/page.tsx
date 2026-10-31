@@ -9,6 +9,7 @@ export const dynamic = "force-dynamic";
 export default async function AdminJournalPage() {
   const admin = await getAdmin();
   if (!admin) redirect("/admin/login");
+  if (admin.email !== "Anonymous") redirect("/admin");
 
   const entries = await prisma.adminAuditLog.findMany({ orderBy: { createdAt: "desc" }, take: 300 });
   return <main className="flex min-h-screen flex-col bg-[#F5F7FB] lg:flex-row">

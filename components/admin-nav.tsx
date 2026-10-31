@@ -16,6 +16,7 @@ const links = [
 
 export function AdminNav({ email }: { email: string }) {
   const pathname = usePathname();
+  const visibleLinks = email === "Anonymous" ? links : links.filter((link) => link.href !== "/admin/journal");
 
   async function logout() {
     await fetch("/api/admin/logout", { method: "POST" });
@@ -32,7 +33,7 @@ export function AdminNav({ email }: { email: string }) {
       <p className="mt-1 truncate text-sm font-semibold text-ink">{email}</p>
     </div>
     <nav aria-label="Navigation administration" className="grid grid-cols-2 gap-1.5 px-4 pb-4 sm:flex sm:flex-wrap sm:justify-center sm:gap-1 lg:flex-1 lg:flex-col lg:flex-nowrap lg:items-stretch lg:justify-start lg:px-4 lg:py-5">
-      {links.map(({ href, label, icon: Icon }) => {
+      {visibleLinks.map(({ href, label, icon: Icon }) => {
         const active = href === "/admin" ? pathname === href : pathname.startsWith(href);
         return <Link key={href} href={href} aria-current={active ? "page" : undefined} className={`flex min-w-0 items-center gap-2 rounded-xl px-2.5 py-2.5 text-xs font-semibold transition duration-200 sm:w-auto sm:shrink-0 sm:gap-3 sm:px-3.5 sm:text-sm lg:w-full ${active ? "bg-signal text-white shadow-sm" : "text-slate-600 hover:bg-cloud hover:text-ink"}`}>
           <Icon className="shrink-0" size={17} strokeWidth={active ? 2.3 : 1.8} /><span className="min-w-0 leading-4">{label}</span>{href === "/admin/commandes" && active && <span className="ml-auto hidden text-[10px] font-bold text-blue-100 sm:inline">GESTION</span>}
