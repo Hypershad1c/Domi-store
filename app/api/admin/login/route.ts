@@ -15,6 +15,7 @@ export async function POST(request: Request) {
   let body: { email?: unknown; password?: unknown };
   try { body = await request.json(); }
   catch { return NextResponse.json({ error: "Requête invalide." }, { status: 400 }); }
+  if (typeof body !== "object" || body === null) return NextResponse.json({ error: "Requête invalide." }, { status: 400 });
   const identifier = typeof body.email === "string" ? body.email.trim() : "";
   const password = typeof body.password === "string" ? body.password : "";
   const expectedEmail = process.env.ADMIN_EMAIL || "admin@domistore.ma";

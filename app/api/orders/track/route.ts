@@ -57,7 +57,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Aucune commande trouvée. Vérifiez la référence et le téléphone utilisés lors de la commande." }, { status: 404 });
     }
 
-    lookupAttempts.delete(ip);
     return NextResponse.json({
       id: order.id,
       status: order.status,

@@ -9,6 +9,7 @@ async function updateSupportHandler(request: Request, { params }: { params: Prom
   let body: { status?: unknown };
   try { body = await request.json(); }
   catch { return NextResponse.json({ error: "Requête invalide." }, { status: 400 }); }
+  if (typeof body !== "object" || body === null) return NextResponse.json({ error: "Requête invalide." }, { status: 400 });
   const parsed = supportStatusSchema.safeParse(body.status);
   if (!parsed.success) return NextResponse.json({ error: "Statut invalide" }, { status: 400 });
   try {
