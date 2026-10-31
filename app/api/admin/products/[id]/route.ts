@@ -6,6 +6,7 @@ import { notifyLowStock } from "@/lib/notifications";
 import { lowStockThreshold } from "@/lib/inventory";
 import { getOrCreateCategory } from "@/lib/categories";
 import { runAuditedAdminAction } from "@/lib/admin-audit";
+import { Prisma } from "@prisma/client";
 
 function isDuplicateKey(error: unknown) { return typeof error === "object" && error !== null && "code" in error && error.code === "P2002"; }
 function duplicateField(error: unknown) {
@@ -88,7 +89,9 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
   const admin = await getAdmin();
   if (!admin) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
   const { id } = await context.params;
-  return runAuditedAdminAction({ request, admin, action: "UPDATE", entityType: "Produit", entityId: id, run: () => updateProductHandler(request, context) });
+  const previous = await prisma.product.findUnique({ where: { id }, select: { name: true, slug: true, category: { select: { name: true } }, price: true, compareAt: true, shortDesc: true, description: true, features: true, stock: true, published: true, featured: true, hasCamera: true, faceId: true, images: { select: { url: true }, orderBy: { sortOrder: "asc" } } } }).catch(() => null);
+  const previousData = previous ? JSON.parse(JSON.stringify({ ...previous, category: previous.category.name, images: previous.images.map((image) => image.url) })) as Prisma.InputJsonValue : undefined;
+  return runAuditedAdminAction({ request, admin, action: "UPDATE", entityType: "Produit", entityId: id, previousData, run: () => updateProductHandler(request, context) });
 }
 
 export async function DELETE(request: Request, context: { params: Promise<{ id: string }> }) {

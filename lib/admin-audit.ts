@@ -1,4 +1,4 @@
-import type { AdminUser } from "@prisma/client";
+import type { AdminUser, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 
 type AuditAdmin = Pick<AdminUser, "id" | "email"> | null;
@@ -11,6 +11,8 @@ type AuditEvent = {
   entityName?: string | null;
   success: boolean;
   message?: string | null;
+  previousData?: Prisma.InputJsonValue;
+  newData?: Prisma.InputJsonValue;
 };
 
 type AuditedAction = Omit<AuditEvent, "success" | "message"> & {
@@ -45,6 +47,8 @@ export async function writeAdminAudit(event: AuditEvent) {
         device: getDevice(userAgent || ""),
         method: event.request.method,
         path: new URL(event.request.url).pathname,
+        ...(event.previousData ? { previousData: event.previousData } : {}),
+        ...(event.newData ? { newData: event.newData } : {}),
       },
     });
   } catch (error) {
@@ -62,7 +66,7 @@ export async function runAuditedAdminAction({ run, ...event }: AuditedAction) {
     throw error;
   }
 
-  const body = await response.clone().json().catch(() => null) as { id?: unknown; name?: unknown; error?: unknown } | null;
+  const body = await response.clone().json().catch(() => null) as { id?: unknown; name?: unknown; error?: unknown; [key: string]: unknown } | null;
   const success = response.ok;
   const bodyMessage = typeof body?.error === "string" ? body.error : null;
   const status = typeof (body as { status?: unknown } | null)?.status === "string" ? ` · Statut : ${(body as { status: string }).status}` : "";
@@ -73,6 +77,27 @@ export async function runAuditedAdminAction({ run, ...event }: AuditedAction) {
     entityName: (typeof body?.name === "string" ? body.name : null) || event.entityName || (typeof requestData?.name === "string" ? requestData.name : null),
     success,
     message,
+    ...(success && event.action === "UPDATE" && event.entityType === "Produit" && event.previousData && body ? { previousData: event.previousData, newData: snapshotProduct(body) } : {}),
   });
   return response;
+}
+
+function snapshotProduct(value: Record<string, unknown>): Prisma.InputJsonValue {
+  const category = value.category;
+  return JSON.parse(JSON.stringify({
+    name: value.name,
+    slug: value.slug,
+    category: typeof category === "object" && category !== null && "name" in category ? category.name : category,
+    price: value.price,
+    compareAt: value.compareAt,
+    shortDesc: value.shortDesc,
+    description: value.description,
+    features: value.features,
+    stock: value.stock,
+    published: value.published,
+    featured: value.featured,
+    hasCamera: value.hasCamera,
+    faceId: value.faceId,
+    images: Array.isArray(value.images) ? value.images.map((image) => typeof image === "object" && image !== null && "url" in image ? image.url : image) : undefined,
+  })) as Prisma.InputJsonValue;
 }

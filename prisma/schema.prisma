@@ -30,6 +30,8 @@ model AdminAuditLog {
   device     String?
   method     String?
   path       String?
+  previousData Json?
+  newData      Json?
   createdAt  DateTime @default(now())
 
   @@index([createdAt])

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Boxes, ClipboardList, LayoutDashboard, LifeBuoy, LogOut, Package, ReceiptText, Tags } from "lucide-react";
+import { Boxes, ClipboardList, History, KeyRound, LayoutDashboard, LifeBuoy, LogOut, Package, ReceiptText, Tags } from "lucide-react";
 
 const links = [
   { href: "/admin", label: "Vue d'ensemble", icon: LayoutDashboard },
@@ -12,11 +12,13 @@ const links = [
   { href: "/admin/devis", label: "Demandes de devis", icon: Tags },
   { href: "/admin/sav", label: "Service après-vente", icon: LifeBuoy },
   { href: "/admin/journal", label: "Journal d’activité", icon: ClipboardList },
+  { href: "/admin/historique-produits", label: "Historique produits", icon: History },
+  { href: "/admin/securite", label: "Mot de passe", icon: KeyRound },
 ];
 
 export function AdminNav({ email }: { email: string }) {
   const pathname = usePathname();
-  const visibleLinks = email === "Anonymous" ? links : links.filter((link) => link.href !== "/admin/journal");
+  const visibleLinks = email === "Anonymous" ? links : links.filter((link) => !["/admin/journal", "/admin/historique-produits", "/admin/securite"].includes(link.href));
 
   async function logout() {
     await fetch("/api/admin/logout", { method: "POST" });
