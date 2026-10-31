@@ -3,13 +3,17 @@
 import { useState, type FormEvent } from "react";
 import { CheckCircle2, KeyRound, Loader2 } from "lucide-react";
 
-export function AdminPasswordForm() {
+type AdminOption = { id: string; email: string };
+
+export function AdminPasswordForm({ users, currentAdminId }: { users: AdminOption[]; currentAdminId: string }) {
+  const [targetUserId, setTargetUserId] = useState(currentAdminId);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [saving, setSaving] = useState(false);
+  const changingOwnPassword = targetUserId === currentAdminId;
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -20,7 +24,7 @@ export function AdminPasswordForm() {
       const response = await fetch("/api/admin/password", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ currentPassword, newPassword, confirmPassword }),
+        body: JSON.stringify({ targetUserId, currentPassword: changingOwnPassword ? currentPassword : undefined, newPassword, confirmPassword }),
       });
       const body = await response.json().catch(() => ({}));
       if (!response.ok) { setError(body.error || "Impossible de modifier le mot de passe."); return; }
@@ -36,8 +40,10 @@ export function AdminPasswordForm() {
   }
 
   return <form onSubmit={submit} className="max-w-2xl rounded-2xl border border-line bg-white p-5 shadow-card sm:p-7">
-    <div className="flex items-start gap-3"><span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-blue-50 text-signal"><KeyRound size={20} /></span><div><h2 className="font-extrabold text-ink">Modifier le mot de passe</h2><p className="mt-1 text-sm leading-6 text-slate-500">La modification déconnectera les autres sessions Anonymous.</p></div></div>
-    <label className="mt-6 block text-sm font-semibold text-ink">Mot de passe actuel<input required type="password" autoComplete="current-password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} className="mt-1.5 w-full rounded-lg border border-line bg-cloud px-3 py-2.5 outline-none focus:border-signal" /></label>
+    <div className="flex items-start gap-3"><span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-blue-50 text-signal"><KeyRound size={20} /></span><div><h2 className="font-extrabold text-ink">Modifier un mot de passe</h2><p className="mt-1 text-sm leading-6 text-slate-500">Les autres sessions du compte sélectionné seront déconnectées.</p></div></div>
+    <label className="mt-6 block text-sm font-semibold text-ink">Compte administrateur<select value={targetUserId} onChange={(e) => { setTargetUserId(e.target.value); setCurrentPassword(""); setError(""); setSuccess(""); }} className="mt-1.5 w-full rounded-lg border border-line bg-cloud px-3 py-2.5 outline-none focus:border-signal">{users.map((user) => <option key={user.id} value={user.id}>{user.email}{user.id === currentAdminId ? " (votre compte)" : ""}</option>)}</select></label>
+    {changingOwnPassword && <label className="mt-4 block text-sm font-semibold text-ink">Mot de passe actuel<input required type="password" autoComplete="current-password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} className="mt-1.5 w-full rounded-lg border border-line bg-cloud px-3 py-2.5 outline-none focus:border-signal" /></label>}
+    {!changingOwnPassword && <p className="mt-4 rounded-lg bg-blue-50 p-3 text-xs leading-5 text-slate-600">Vous réinitialisez le mot de passe de ce compte. Son mot de passe actuel n’est pas requis.</p>}
     <label className="mt-4 block text-sm font-semibold text-ink">Nouveau mot de passe<input required minLength={12} type="password" autoComplete="new-password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="mt-1.5 w-full rounded-lg border border-line bg-cloud px-3 py-2.5 outline-none focus:border-signal" /><span className="mt-1 block text-xs font-normal text-slate-400">12 caractères minimum.</span></label>
     <label className="mt-4 block text-sm font-semibold text-ink">Confirmer le nouveau mot de passe<input required minLength={12} type="password" autoComplete="new-password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="mt-1.5 w-full rounded-lg border border-line bg-cloud px-3 py-2.5 outline-none focus:border-signal" /></label>
     {error && <p role="alert" className="mt-4 rounded-lg border border-red-100 bg-red-50 p-3 text-sm font-semibold text-red-700">{error}</p>}

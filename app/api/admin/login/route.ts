@@ -22,10 +22,11 @@ export async function POST(request: Request) {
 
   try {
     let admin: { id: string; email: string } | null = null;
-    if (identifier.toLowerCase() === "anonymous") {
-      const candidate = await prisma.adminUser.findUnique({ where: { email: "Anonymous" } });
-      if (candidate && await bcrypt.compare(password, candidate.passwordHash)) admin = candidate;
-    } else if (identifier === expectedEmail && envHash && await bcrypt.compare(password, envHash)) {
+    const accountEmail = identifier.toLowerCase() === "anonymous" ? "Anonymous" : identifier;
+    const candidate = accountEmail ? await prisma.adminUser.findUnique({ where: { email: accountEmail } }) : null;
+    if (candidate && await bcrypt.compare(password, candidate.passwordHash)) {
+      admin = candidate;
+    } else if (!candidate && identifier === expectedEmail && envHash && await bcrypt.compare(password, envHash)) {
       admin = await prisma.adminUser.upsert({ where: { email: identifier }, update: {}, create: { email: identifier, passwordHash: envHash } });
     }
 
