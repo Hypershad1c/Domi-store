@@ -7,6 +7,7 @@ import { lowStockThreshold } from "@/lib/inventory";
 import { getOrCreateCategory } from "@/lib/categories";
 import { runAuditedAdminAction } from "@/lib/admin-audit";
 import { Prisma } from "@prisma/client";
+import { slugify } from "@/lib/utils";
 
 function isDuplicateKey(error: unknown) { return typeof error === "object" && error !== null && "code" in error && error.code === "P2002"; }
 function duplicateField(error: unknown) {
@@ -32,7 +33,10 @@ async function updateProductHandler(request: Request, { params }: { params: Prom
   }, { status: 400 });
 
   const { id } = await params;
+  const normalizedSlug = slugify(parsed.data.slug);
+  if (normalizedSlug.length < 2) return NextResponse.json({ error: "Le slug doit contenir au moins deux caractères après normalisation.", details: [{ field: "slug", message: "Utilisez des lettres et des chiffres dans le slug." }] }, { status: 400 });
   const { category: categoryName, imageUrl, imageUrls, primaryImageIndex, ...productData } = parsed.data;
+  productData.slug = normalizedSlug;
   const urls = imageUrls.length ? imageUrls : imageUrl ? [imageUrl] : [];
   try {
     const slugInUse = await prisma.product.findFirst({ where: { slug: productData.slug, id: { not: id } }, select: { id: true } });

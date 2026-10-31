@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { products, type Product } from "@/lib/data";
+import { slugify } from "@/lib/utils";
 
 function toPublicProduct(product: { id: string; name: string; slug: string; category: { name: string; slug: string }; price: number; compareAt: number | null; shortDesc: string; description: string; features: unknown; stock: number; published: boolean; featured: boolean; hasCamera: boolean; faceId: boolean; images: { url: string; sortOrder: number; isPrimary: boolean }[] }): Product {
   const orderedImages = [...product.images].sort((a, b) => Number(b.isPrimary) - Number(a.isPrimary) || a.sortOrder - b.sortOrder).map((image) => image.url);
@@ -14,4 +15,16 @@ export async function getPublicProducts(): Promise<Product[]> {
   } catch { return products; }
 }
 
-export async function getPublicProduct(slug: string): Promise<Product | undefined> { const fallback = products.find((item) => item.slug === slug); try { const product = await prisma.product.findFirst({ where: { slug, published: true }, include: { category: true, images: { orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }] } } }); return product ? toPublicProduct(product) : fallback; } catch { return fallback; } }
+export async function getPublicProduct(slug: string): Promise<Product | undefined> {
+  const normalizedSlug = slugify(slug);
+  const fallback = products.find((item) => item.slug === slug || item.slug === normalizedSlug);
+  try {
+    const include = { category: true, images: { orderBy: [{ isPrimary: "desc" as const }, { sortOrder: "asc" as const }] } };
+    const product = await prisma.product.findFirst({ where: { slug: normalizedSlug, published: true }, include })
+      || await prisma.product.findFirst({ where: { slug, published: true }, include });
+    if (product) return toPublicProduct(product);
+    const legacyProducts = await prisma.product.findMany({ where: { published: true }, include });
+    const legacyProduct = legacyProducts.find((item) => slugify(item.slug) === normalizedSlug);
+    return legacyProduct ? toPublicProduct(legacyProduct) : fallback;
+  } catch { return fallback; }
+}
